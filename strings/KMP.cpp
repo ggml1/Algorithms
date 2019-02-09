@@ -1,24 +1,45 @@
-vector<int> build(string &p){
-	vector<int> b(p.size() + 5);
-	int sz = p.size();
-	int i = 0, j = -1;
-	b[i] = j;
-	while (i < sz) {
-		while (j >= 0 && p[j] != p[i]) j = b[j];
-		j++, i++;
-		b[i] = j;
+const int M = 1e5 + 1;
+const int ALPHABET = 27;
+
+int aut[M][ALPHABET];
+
+void automaton(string &p) {
+	for (int i = 0; i < ALPHABET; ++i) {
+		aut[0][i] = (i != p[0] - 'a');
 	}
-	return b;
+	int brd = 0;
+	int m = p.size();
+	for (int i = 1; i <= m; ++i) {
+		for (int j = 0; j < ALPHABET; ++j) {
+			aut[i][j] = aut[brd][j];
+		}
+		if (i < m) {
+			aut[i][p[i] - 'a'] = i + 1;
+			brd = a[brd][p[i] - 'a'];
+		}
+	}
+}
+
+vector<int> build(string &p){
+	int n = p.size();
+	vector<int> pi(n, 0);
+	for (int i = 1; i < n; ++i) {
+		int k = pi[i - 1];
+		while (k && p[i] != p[k]) k = pi[k - 1];
+		if (p[i] == p[k]) ++k;
+		pi[i] = k;
+	}
+	return pi;
 }
 
 int calc(string &t, string &p) {
-	vector<int> b = build(p);
-	int sz = t.size(), m = p.size();
-	int i = 0, j = 0;
-	while (i < sz) {
-		while (j >= 0 && t[i] != p[j]) j = b[j];
-		i++, j++;
-		if (j == m) return i - j;
+	vector<int> pi = build(p);
+	int n = s.size(), m = p.size();
+	int k = 0;
+	for (int i = 0; i < n; ++i) {
+		while (k && s[i] != p[k]) k = pi[k - 1];
+		if (s[i] == p[k]) ++k;
+		if (k == m) return i - m + 1;
 	}
 	return -1;
 }
