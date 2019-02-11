@@ -1,74 +1,83 @@
-const int N = 2e3 + 5, SIG = 70;
-const int M = 1e5 + 5;
-// edit
-char s[N], txt[M];
-int link[N];
-vector<int> term[N];
-bool fnd[N];
-int t[N][SIG];
-int sz = 1;
+const int N = 1e6 + 5;
+const int SIG = 28;
 
-int val(char x) {
-  if (x >= 'a' && x <= 'z') return x - 'a';
-  if (x >= 'A' && x <= 'Z') return 27 + x - 'A';
-  return 54 + x - '0';
+char s[N];
+bool got[N];
+
+struct Node {
+  Node *next[SIG], *fail;
+  vector<int> found;
+  bool done;
+  Node() {
+      fail = NULL;
+      done = false;
+      found.clear();
+      memset(next, 0, sizeof next);
+  }
+};
+
+int val(char ch) {
+  return ch - 'a';
 }
 
-void add(int w) {
-	int nd = 0;
-	for (int i = 0; s[i]; ++i) {
-		int pos = val(s[i]);
-		if (t[nd][pos] == -1) {
-			t[nd][pos] = sz++;
-		}
-		nd = t[nd][pos];
-	}
-	term[nd].push_back(w);
+void add(Node *root, int idx) {
+  Node *p = root;
+  for (int i = 0; s[i]; ++i) {
+    int ch = val(s[i]);
+    if (p->next[ch] == NULL) p->next[ch] = new Node();
+    p = p->next[ch];
+  }
+  p->found.push_back(idx);
 }
 
-void push_links() {
-	queue<int> q;
-	q.push(0);
-	while (!q.empty()) {
-		int node = q.front(); q.pop();
-		for (int c = 0; c < SIG; ++c) {
-			int f = (node == 0 ? 0 : t[link[node]][c]);
-			if (t[node][c] == -1) {
-				t[node][c] = f;
-			} else {
-				link[t[node][c]] = f;
-				q.push(t[node][c]);
-			}
-		}
-	}
+void get_links(Node *root) {
+  Node *p;
+  queue<Node*> q;
+  q.push(root);
+  root->fail = NULL;
+  while (!q.empty()) {
+    Node *cur = q.front(); q.pop();
+    for (int i = 0; i < SIG; ++i) {
+      if (cur->next[i] == NULL) continue;
+      q.push(cur->next[i]);
+      p = cur->fail;
+      while (p != NULL && p->next[i] == NULL) p = p->fail;
+      if (p == NULL) cur->next[i]->fail = root;
+      else cur->next[i]->fail = p->next[i];
+    }
+  }
 }
 
-void search() {
-	int nd = 0;
-	for (int i = 0; txt[i]; ++i) {
-		int pos = val(txt[i]);
-		int where = t[nd][pos];
-		for (int x : term[where]) {
-			fnd[x] = 1;
-		}
-		nd = t[nd][pos];
-	}
+void search(Node *root) {
+  Node *p, *q;
+  p = root;
+  for (int i = 0; s[i]; ++i) {
+    int ch = val(s[i]);
+    while (p != root && p->next[ch] == NULL) p = p->fail;
+    p = p->next[ch];
+    p = (p == NULL) ? root : p;
+    q = p;
+    while (q != root && q->done == false) {
+      for (int x : q->found) {
+        got[x] = 1;
+      }
+      q->done = true;
+      q = q->fail;
+    }
+  }
 }
 
-int main() {
-  // SPOJ SUB_PROB
-	memset(t, -1, sizeof t);
-  scanf(" %s", txt);
-  int n; scanf("%d", &n);
-	for (int i = 0; i < n; ++i) {
-		scanf(" %s", s);
-		add(i);
-	}
-	push_links();
-	search();
-	for (int i = 0; i < n; ++i) {
-		if (fnd[i]) puts("Y");
-		else puts("N");
-	}
-  return 0;
+void clear(Node *root) {
+  queue<Node*> q;
+  q.push(root);
+  while (!q.empty()) {
+    Node *cur = q.front(); q.pop();
+    for (int i = 0; i < SIG; ++i) {
+      if (cur->next[i] != NULL) {
+        q.push(cur->next[i]);
+      }
+    }
+    cur->found.clear();
+    delete cur;
+  }
 }
