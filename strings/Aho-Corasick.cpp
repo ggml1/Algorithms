@@ -1,6 +1,6 @@
 const int N = 2e3 + 5, SIG = 70;
 const int M = 1e5 + 5;
-
+// edit
 char s[N], txt[M];
 int link[N];
 vector<int> term[N];
