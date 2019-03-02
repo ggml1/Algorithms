@@ -37,12 +37,12 @@ void queryH(int u, int v) {
   while (idx[u] != idx[v]) {
     int a = pos[head[idx[u]]];
     int b = pos[u];
-    query(a, b);
+    queryS(a, b);
     u = par[0][head[idx[u]]];
   }
   if (u == v) return;
   int a = pos[v] + 1, b = pos[u];
-  query(a, b);
+  queryS(a, b);
 }
 
 int lca(int u, int v) {
@@ -55,7 +55,7 @@ int lca(int u, int v) {
   for (int i = MLOG - 1; i >= 0; --i) {
     if (par[i][u] != par[i][v]) {
       u = par[i][u];
-      v = par[i][v]
+      v = par[i][v];
     }
   }
   return par[0][u];
