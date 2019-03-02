@@ -28,7 +28,7 @@ int LCA(int u, int v) {
   int dist = h[v] - h[u];
   for (int i = 0; i < MLOG; ++i) {
     if (dist & (1 << i)) {
-      u = par[i][u];
+      v = par[i][v];
     }
   }
   if (u == v) return u;
