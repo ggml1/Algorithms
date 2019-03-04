@@ -1,7 +1,7 @@
 // LEGENDRE'S THEOREM
 // -------------------
 // Given a number N (1 <= N <= 1e18),
-// it states that v_p(N!) = sum (k : 1 -> oo) [ceil(N / (p ^ k))],
+// it states that v_p(N!) = sum (k : 1 -> oo) [floor(N / (p ^ k))],
 // where v_x(N!) is the exact exponent of the prime x in the prime
 // factorization of N!
 
