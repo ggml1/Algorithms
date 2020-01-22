@@ -56,7 +56,7 @@ struct Flow {
 
 	T dfs(int v, int sink, T cur) {
 		if (v == sink) return cur;
-		for(; on[v] < adj[v].size(); on[v]++) {
+		for(; on[v] < (int) adj[v].size(); on[v]++) {
 			int id = adj[v][on[v]];
 			if (level[v] + 1 != level[edges[id].to]) {
 				continue;
@@ -78,7 +78,7 @@ struct Flow {
 		while (bfs(src, sink)) {
 			on = vector<int>(n + 2, 0);
 			T cur;
-			while (cur = dfs(src, sink, 1e9)) {
+			while ((cur = dfs(src, sink, 1e9))) {
 				ans += cur;
 			}
 		}
